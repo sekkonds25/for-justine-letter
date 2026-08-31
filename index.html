@@ -7,11 +7,11 @@
 <meta name="description" content="A little something I wanted to put into words.">
 <title>A little something I wanted to tell you</title>
 
-<!-- Preconnect to Google Fonts to establish fast connection on mobile networks -->
+<!-- Preconnect to Google Fonts for fast loading -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-<!-- Preload Caveat explicitly so Android downloads it before page render -->
+<!-- Preload Caveat for smooth Android rendering -->
 <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Inter:wght@400;500&display=swap">
 <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600&family=Inter:wght@400;500&display=swap" rel="stylesheet">
 
@@ -37,6 +37,30 @@ body {
     var(--paper);
   font-family:'Inter', system-ui, -apple-system, sans-serif;
   overflow-x: hidden;
+}
+
+/* Taller gradient overlay to cover 2-3 lines of text smoothly */
+.scroll-bottom-fade {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 240px;
+  background: linear-gradient(
+    to bottom, 
+    rgba(252, 248, 242, 0) 0%, 
+    rgba(252, 248, 242, 0.4) 30%, 
+    rgba(252, 248, 242, 0.85) 65%, 
+    rgba(252, 248, 242, 1) 100%
+  );
+  pointer-events: none;
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.scroll-bottom-fade.active {
+  opacity: 1;
 }
 
 #landing {
@@ -80,14 +104,12 @@ body {
 
 #letter-view { 
   display:none; 
-  padding:clamp(24px, 6vw, 60px) 20px; 
+  padding:clamp(24px, 6vw, 60px) 20px 220px; 
   opacity:0; 
-  transform:translateY(12px);
-  transition:opacity 0.8s ease, transform 0.8s ease; 
+  transition:opacity 0.8s ease; 
 }
 
-#letter-view.show { display:block; }
-#letter-view.fade-in { opacity:1; transform:translateY(0); }
+#letter-view.show { display:block; opacity:1; }
 
 .letter {
   width:min(680px, 100%); 
@@ -112,21 +134,33 @@ body {
 
 .content {
   font-family:'Caveat', cursive, sans-serif;
-  /* Reduced font size for tighter, cleaner text layout */
   font-size:clamp(1.1rem, 2vw, 1.3rem); 
   line-height:1.6; 
   letter-spacing:.01em;
 }
 
-.content p { margin:0 0 1.3em; }
+/* Scroll reveal initial states for paragraphs and signature */
+.reveal-item {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), transform 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  will-change: opacity, transform;
+  margin: 0 0 1.5em;
+}
+
+/* Revealed state when scrolled into view */
+.reveal-item.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
 
 .signature { 
-  margin-top:36px; 
+  margin-top:40px; 
   font-family:'Caveat', cursive, sans-serif; 
   font-size:clamp(1.8rem, 4.2vw, 2.3rem); 
 }
 
-/* Force hidden preload container to cash font in browser memory before click */
+/* Force hidden preload container */
 .font-preload {
   position: absolute;
   opacity: 0;
@@ -136,19 +170,21 @@ body {
 }
 
 @media(max-width:600px) {
-  #letter-view { padding:20px 14px 36px; }
+  #letter-view { padding:20px 14px 200px; }
   .content { line-height:1.55; }
 }
 
 @media(prefers-reduced-motion:reduce) {
+  .reveal-item { transition: none !important; opacity: 1 !important; transform: none !important; }
+  .scroll-bottom-fade { display: none !important; }
   *,*::before,*::after { animation-duration:.01ms!important; transition-duration:.01ms!important; scroll-behavior:auto!important; }
 }
 </style>
 </head>
 <body>
 
-<!-- Keeps Caveat cached instantly on page start -->
 <div class="font-preload">Dear Justine</div>
+<div class="scroll-bottom-fade" id="bottomFade"></div>
 
 <main>
 <section id="landing" aria-labelledby="intro-title">
@@ -162,33 +198,35 @@ body {
   <article class="letter">
     <h1 id="letter-title">Dear Justine,</h1>
     <p class="date-note">A little something I wanted to put into words.</p>
+    
     <div class="content">
-      <p>Okay, so I guess this is the modern version of writing someone a letter hahaha. Instead of papel at ballpen, gumawa pa talaga ako ng sariling digital version nito.</p>
-      <p>I know this is probably a lot for a normal chat, and I didn't really want to just throw a wall of messages at you habang magulo pa yung thoughts ko. So I took some time to actually write everything down properly. Not because this is supposed to be some super serious dramatic letter HAHAHA, but because I know myself enough to know that if I try to say all of this casually, baka may masabi akong kulang, may ma-misinterpret, or mawala yung context ng gusto kong sabihin.</p>
-      <p>More than anything, I just don't want you to be left guessing about why I've been acting differently. I could've just kept quiet and let things go back to normal, but I'd rather be honest about what's been going through my head than let my silence or distance explain it for me.</p>
-      <p>And just to be clear from the start, this isn't me asking you to fix anything or give me an answer. This is really just my side of things—what I felt, what I realized, and where I'm at now. You can read it whenever you're ready, and you don't have to figure everything out while reading it.</p>
-      <p>After Thursday, my first instinct was to pull away muna. I think yung nangyari that day pushed me into that reaction too, especially because it was the first time I actually asked someone in person like that. I don't really have much experience with that kind of situation, so I think I was caught off guard by how much I ended up feeling afterward. Instead of immediately talking about it, automatic reaction ko was to step back muna. I needed some space to let myself cool down and understand what I was actually feeling instead of saying something while I was still all over the place. And I think that space was good for me.</p>
-      <p>Pero habang ginagawa ko yun, may isa rin akong napansin nitong buong week. Kahit sinusubukan kong mag-step back and regulate myself, somehow nagkakausap pa rin tayo. May mga pagkakataon na work-related, may mga pagkakataon na napupunta pa rin sa jokes or random things, and eventually I realized na hindi ko pala kayang pilitin yung sarili ko na maging distant sayo just because I was trying to protect myself. Siguro marupok lang talaga ako HAHAHA, pero more than that, narealize ko rin na hindi ko talaga gusto maging ganun yung way ng pakikitungo sayo. Yung bigla na lang kitang hindi papansinin habang inaayos ko yung thoughts ko—I realized that's just not me.</p>
-      <p>And honestly, yung joke natin about "unconfessing" added another layer to what I was already processing. Hindi naman sa kinuha ko siya as something serious, pero dahil medyo vulnerable na rin ako that time, it got into my head a little. Napaisip ako, and I think that's where some of my fear came from. Not because I wanted to assume anything from that joke, but because I realized na takot pala ako sa possibility na bawiin ko lahat ng nasabi at pinakita ko just because I became afraid.</p>
-      <p>And I think that's something I don't want to do. I don't want fear to make me suddenly take back what I genuinely feel, or make me act like I don't care just because caring makes me vulnerable. I know myself enough to know that when I care about someone, I naturally want to reach out, listen, check in, share things, and spend time with them. That's part of who I am, and I don't want to shrink that part of myself just to make things feel safer for me.</p>
-      <p>Siguro habang iniisip ko rin kung ano ba talaga yung gusto ko, narealize ko na I don't really want something na puro sweetness or yung kailangan laging may romantic gesture. I don't even really know what a relationship is supposed to look like for me because, to be honest, I haven't been in one. Pero one thing I am sure of is gusto ko yung may tropa vibe pa rin, regardless of the relationship. Yung comfortable, nagtatawanan, nagra-rant, nag-aasaran, nag-aaya bigla, and just existing around each other without having to feel romantic every time.</p>
-      <p>I think that's the kind of foundation I'd want to have with someone I genuinely choose to keep getting to know. I don't know exactly what that relationship would look like because I haven't experienced one myself, but I know I want the person I'm close to to also feel like my best friend and teammate. Someone I can grow with, be vulnerable with, laugh with, support, and see where that connection naturally takes us.</p>
-      <p>And if I'm being honest, I know I want to keep exploring that possibility with you.</p>
-      <p>That's also why I said I want to pursue you intentionally. Hindi dahil kailangan kong may title tayo, or because I want to rush anything. I just genuinely like that I get to exist in the same axis with you, and I want to know you beyond the parts of us that work allows.</p>
-      <p>Yung time natin before sa Megamall is probably one of the reasons why I keep wanting to do that. I really enjoyed that time with you. It felt different from our usual conversations at work. We got to talk about random things, personal stuff, joke around, and just let the day pass. And I think that's really what pushes me whenever I ask you for a hangout.</p>
-      <p>And I also want to acknowledge something about the way I've been inviting you lately. Minsan I get these ideas in my head and I get excited about them, and before I know it, parang naging decision ko na rin for you. Yung time na sinabi ko na sasabayan kita and even said na maghihintay ako, I realize now na I might have made it feel less like an invitation and more like something you were already expected to go along with. I'm sorry for that.</p>
-      <p>Hindi naman talaga yun yung intention ko. I genuinely just wanted to include you in the things I was already thinking of doing. Kaya nga may mga "timezone" invites ako minsan. It's basically me thinking, "this sounds fun, maybe I could share it with you." But I don't want my excitement about spending time with you to become pressure on you. I can invite you without assuming your answer, and that's something I want to be more mindful of.</p>
-      <p>Hindi rin dahil iniisip kong kailangan mong magsaya or kailangan kitang ilabas kasi pagod ka. I don't want to decide that for you. Gusto ko lang talaga makasama ka. If we both had a long week and we can spend a few hours laughing, eating, walking around, or just talking nonsense, then I'd enjoy that. And I'd like to share that with you.</p>
-      <p>For me, that's really what pursuing you intentionally means. It's not about trying to get somewhere as quickly as possible. It's about genuinely wanting to know you, spend time with you, and see what can naturally grow from that connection. That's also why I asked you before to just let me exist as myself around you.</p>
-      <p>At the same time, I know that being honest about what I want doesn't mean I get to decide what you want. You have your own choices, your own pace, and your own boundaries. I want to be able to be honest about my feelings while still giving you the freedom to choose what feels right for you.</p>
-      <p>That's probably the biggest thing I realized from taking that space this week. I can choose myself without having to become distant from you. I can protect myself without pretending that I don't care. And I can be honest about wanting you in my life without expecting you to give me something in return.</p>
-      <p>So ayun. Hindi ko sinusulat 'to para kailangan mong sagutin lahat ng sinabi ko. I don't need you to figure everything out right now, and I don't need an answer just because I've finally said all of this. If someday there's something you want to say about it, I'll listen. But you don't owe me a response to this message.</p>
-      <p>I just wanted to let this out properly instead of keeping it in my head and letting my silence speak for me. I wanted you to know why I became distant for a while, what I realized during that space, and where I'm at now.</p>
-      <p>And after having all that space to think, I'm still in the same place. I still want to pursue you intentionally. I don't regret saying that, and I don't regret caring about you. I also don't want my pursuit to become something you feel trapped by. I want to be able to care for you, invite you, spend time with you, and be honest with you while still respecting whatever pace and boundaries you have.</p>
-      <p>For now, that's really all I wanted to say.</p>
-      <p>Ayun lang. Sorry ang haba HAHAHA. I think I just needed to finally put this into words instead of letting my brain write the story for me. You don't have to figure everything out right now. You don't even have to say anything. I just wanted you to know me a little more clearly.</p>
+      <p class="reveal-item">Okay, so I guess this is the modern version of writing someone a letter hahaha. Instead of papel at ballpen, gumawa pa talaga ako ng sariling digital version nito.</p>
+      <p class="reveal-item">I know this is probably a lot for a normal chat, and I didn't really want to just throw a wall of messages at you habang magulo pa yung thoughts ko. So I took some time to actually write everything down properly. Not because this is supposed to be some super serious dramatic letter HAHAHA, but because I know myself enough to know that if I try to say all of this casually, baka may masabi akong kulang, may ma-misinterpret, or mawala yung context ng gusto kong sabihin.</p>
+      <p class="reveal-item">More than anything, I just don't want you to be left guessing about why I've been acting differently. I could've just kept quiet and let things go back to normal, but I'd rather be honest about what's been going through my head than let my silence or distance explain it for me.</p>
+      <p class="reveal-item">And just to be clear from the start, this isn't me asking you to fix anything or give me an answer. This is really just my side of things—what I felt, what I realized, and where I'm at now. You can read it whenever you're ready, and you don't have to figure everything out while reading it.</p>
+      <p class="reveal-item">After Thursday, my first instinct was to pull away muna. I think yung nangyari that day pushed me into that reaction too, especially because it was the first time I actually asked someone in person like that. I don't really have much experience with that kind of situation, so I think I was caught off guard by how much I ended up feeling afterward. Instead of immediately talking about it, automatic reaction ko was to step back muna. I needed some space to let myself cool down and understand what I was actually feeling instead of saying something while I was still all over the place. And I think that space was good for me.</p>
+      <p class="reveal-item">Pero habang ginagawa ko yun, may isa rin akong napansin nitong buong week. Kahit sinusubukan kong mag-step back and regulate myself, somehow nagkakausap pa rin tayo. May mga pagkakataon na work-related, may mga pagkakataon na napupunta pa rin sa jokes or random things, and eventually I realized na hindi ko pala kayang pilitin yung sarili ko na maging distant sayo just because I was trying to protect myself. Siguro marupok lang talaga ako HAHAHA, pero more than that, narealize ko rin na hindi ko talaga gusto maging ganun yung way ng pakikitungo sayo. Yung bigla na lang kitang hindi papansinin habang inaayos ko yung thoughts ko—I realized that's just not me.</p>
+      <p class="reveal-item">And honestly, yung joke natin about "unconfessing" added another layer to what I was already processing. Hindi naman sa kinuha ko siya as something serious, pero dahil medyo vulnerable na rin ako that time, it got into my head a little. Napaisip ako, and I think that's where some of my fear came from. Not because I wanted to assume anything from that joke, but because I realized na takot pala ako sa possibility na bawiin ko lahat ng nasabi at pinakita ko just because I became afraid.</p>
+      <p class="reveal-item">And I think that's something I don't want to do. I don't want fear to make me suddenly take back what I genuinely feel, or make me act like I don't care just because caring makes me vulnerable. I know myself enough to know that when I care about someone, I naturally want to reach out, listen, check in, share things, and spend time with them. That's part of who I am, and I don't want to shrink that part of myself just to make things feel safer for me.</p>
+      <p class="reveal-item">Siguro habang iniisip ko rin kung ano ba talaga yung gusto ko, narealize ko na I don't really want something na puro sweetness or yung kailangan laging may romantic gesture. I don't even really know what a relationship is supposed to look like for me because, to be honest, I haven't been in one. Pero one thing I am sure of is gusto ko yung may tropa vibe pa rin, regardless of the relationship. Yung comfortable, nagtatawanan, nagra-rant, nag-aasaran, nag-aaya bigla, and just existing around each other without having to feel romantic every time.</p>
+      <p class="reveal-item">I think that's the kind of foundation I'd want to have with someone I genuinely choose to keep getting to know. I don't know exactly what that relationship would look like because I haven't experienced one myself, but I know I want the person I'm close to to also feel like my best friend and teammate. Someone I can grow with, be vulnerable with, laugh with, support, and see where that connection naturally takes us.</p>
+      <p class="reveal-item">And if I'm being honest, I know I want to keep exploring that possibility with you.</p>
+      <p class="reveal-item">That's also why I said I want to pursue you intentionally. Hindi dahil kailangan kong may title tayo, or because I want to rush anything. I just genuinely like that I get to exist in the same axis with you, and I want to know you beyond the parts of us that work allows.</p>
+      <p class="reveal-item">Yung time natin before sa Megamall is probably one of the reasons why I keep wanting to do that. I really enjoyed that time with you. It felt different from our usual conversations at work. We got to talk about random things, personal stuff, joke around, and just let the day pass. And I think that's really what pushes me whenever I ask you for a hangout.</p>
+      <p class="reveal-item">And I also want to acknowledge something about the way I've been inviting you lately. Minsan I get these ideas in my head and I get excited about them, and before I know it, parang naging decision ko na rin for you. Yung time na sinabi ko na sasabayan kita and even said na maghihintay ako, I realize now na I might have made it feel less like an invitation and more like something you were already expected to go along with. I'm sorry for that.</p>
+      <p class="reveal-item">Hindi naman talaga yun yung intention ko. I genuinely just wanted to include you in the things I was already thinking of doing. Kaya nga may mga "timezone" invites ako minsan. It's basically me thinking, "this sounds fun, maybe I could share it with you." But I don't want my excitement about spending time with you to become pressure on you. I can invite you without assuming your answer, and that's something I want to be more mindful of.</p>
+      <p class="reveal-item">Hindi rin dahil iniisip kong kailangan mong magsaya or kailangan kitang ilabas kasi pagod ka. I don't want to decide that for you. Gusto ko lang talaga makasama ka. If we both had a long week and we can spend a few hours laughing, eating, walking around, or just talking nonsense, then I'd enjoy that. And I'd like to share that with you.</p>
+      <p class="reveal-item">For me, that's really what pursuing you intentionally means. It's not about trying to get somewhere as quickly as possible. It's about genuinely wanting to know you, spend time with you, and see what can naturally grow from that connection. That's also why I asked you before to just let me exist as myself around you.</p>
+      <p class="reveal-item">At the same time, I know that being honest about what I want doesn't mean I get to decide what you want. You have your own choices, your own pace, and your own boundaries. I want to be able to be honest about my feelings while still giving you the freedom to choose what feels right for you.</p>
+      <p class="reveal-item">That's probably the biggest thing I realized from taking that space this week. I can choose myself without having to become distant from you. I can protect myself without pretending that I don't care. And I can be honest about wanting you in my life without expecting you to give me something in return.</p>
+      <p class="reveal-item">So ayun. Hindi ko sinusulat 'to para kailangan mong sagutin lahat ng sinabi ko. I don't need you to figure everything out right now, and I don't need an answer just because I've finally said all of this. If someday there's something you want to say about it, I'll listen. But you don't owe me a response to this message.</p>
+      <p class="reveal-item">I just wanted to let this out properly instead of keeping it in my head and letting my silence speak for me. I wanted you to know why I became distant for a while, what I realized during that space, and where I'm at now.</p>
+      <p class="reveal-item">And after having all that space to think, I'm still in the same place. I still want to pursue you intentionally. I don't regret saying that, and I don't regret caring about you. I also don't want my pursuit to become something you feel trapped by. I want to be able to care for you, invite you, spend time with you, and be honest with you while still respecting whatever pace and boundaries you have.</p>
+      <p class="reveal-item">For now, that's really all I wanted to say.</p>
+      <p class="reveal-item">Ayun lang. Sorry ang haba HAHAHA. I think I just needed to finally put this into words instead of letting my brain write the story for me. You don't have to figure everything out right now. You don't even have to say anything. I just wanted you to know me a little more clearly.</p>
     </div>
-    <div class="signature" aria-label="Signed Emil">— Emil</div>
+    
+    <div class="signature reveal-item" aria-label="Signed Emil">— Emil</div>
   </article>
 </section>
 </main>
@@ -196,10 +234,39 @@ body {
 <script>
 let opened = false;
 
-// Command Android browsers to load Caveat immediately
 if (document.fonts) {
   document.fonts.load('1em Caveat');
 }
+
+// IntersectionObserver for scroll reveal
+const observerOptions = {
+  root: null,
+  rootMargin: '0px 0px -10% 0px',
+  threshold: 0.15
+};
+
+const revealObserver = new IntersectionObserver((entries, observer) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      observer.unobserve(entry.target);
+    }
+  });
+}, observerOptions);
+
+// Check if user reached bottom to hide bottom fade overlay smoothly
+window.addEventListener('scroll', () => {
+  if (!opened) return;
+  const bottomFade = document.getElementById('bottomFade');
+  const scrollPosition = window.innerHeight + window.scrollY;
+  const pageHeight = document.documentElement.scrollHeight;
+  
+  if (pageHeight - scrollPosition < 120) {
+    bottomFade.classList.remove('active');
+  } else {
+    bottomFade.classList.add('active');
+  }
+});
 
 function openLetterNow() {
   if (opened) return;
@@ -207,17 +274,19 @@ function openLetterNow() {
 
   const landing = document.getElementById('landing');
   const letter = document.getElementById('letter-view');
+  const bottomFade = document.getElementById('bottomFade');
 
   landing.style.opacity = '0';
 
   setTimeout(() => {
     landing.style.display = 'none';
     letter.classList.add('show');
-    
-    setTimeout(() => {
-      letter.classList.add('fade-in');
-      window.scrollTo(0, 0);
-    }, 50);
+    bottomFade.classList.add('active');
+    window.scrollTo(0, 0);
+
+    document.querySelectorAll('.reveal-item').forEach(el => {
+      revealObserver.observe(el);
+    });
   }, 500);
 }
 
